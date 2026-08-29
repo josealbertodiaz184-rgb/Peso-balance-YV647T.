@@ -2,107 +2,101 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Peso y Balance MD-83</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Peso y Balance - MD-83 YV647T</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f6f9; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    h2 { color: #003366; text-align: center; }
+    .form-group { margin-bottom: 12px; }
+    label { display: block; font-weight: bold; margin-bottom: 4px; }
+    input[type="number"] { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+    button { width: 100%; background-color: #003366; color: white; padding: 10px; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; margin-top: 10px; }
+    button:hover { background-color: #002244; }
+    .results { margin-top: 20px; padding: 15px; background: #eef2f7; border-radius: 4px; }
+  </style>
 </head>
 <body>
-  <h1>Cálculo de Peso y Balance YV647T</h1>
 
-  <script>
-    // Tu código JavaScript va aquí adentro
-  </script>
-</body>
-</html>
+<div class="container">
+  <h2>PESO Y BALANCE MD-83 (YV647T)</h2>
+  
+  <div class="form-group">
+    <label>DOW (Dry Operating Weight - lbs):</label>
+    <input type="number" id="dow" value="88000">
+  </div>
+  <div class="form-group">
+    <label>DOW Index:</label>
+    <input type="number" id="dowIndex" value="50">
+  </div>
+  <div class="form-group">
+    <label>Pasajeros Cabina A (Max 50):</label>
+    <input type="number" id="paxA" value="0">
+  </div>
+  <div class="form-group">
+    <label>Pasajeros Cabina B (Max 65):</label>
+    <input type="number" id="paxB" value="0">
+  </div>
+  <div class="form-group">
+    <label>Pasajeros Cabina C (Max 51):</label>
+    <input type="number" id="paxC" value="0">
+  </div>
+  <div class="form-group">
+    <label>Carga Compartimiento 1 (Max 3585 lbs):</label>
+    <input type="number" id="comp1" value="0">
+  </div>
+  <div class="form-group">
+    <label>Carga Compartimiento 2 (Max 2925 lbs):</label>
+    <input type="number" id="comp2" value="0">
+  </div>
+  <div class="form-group">
+    <label>Carga Compartimiento 3 (Max 7520 lbs):</label>
+    <input type="number" id="comp3" value="0">
+  </div>
+  <div class="form-group">
+    <label>Carga Compartimiento 4 (Max 6645 lbs):</label>
+    <input type="number" id="comp4" value="0">
+  </div>
+  <div class="form-group">
+    <label>Combustible Ramp (lbs):</label>
+    <input type="number" id="fuelRamp" value="20000">
+  </div>
+  <div class="form-group">
+    <label>Combustible Taxi/Trip (lbs):</label>
+    <input type="number" id="tripFuel" value="12000">
+  </div>
 
+  <button onclick="ejecutarCalculo()">Calcular Peso y Balance</button>
+
+  <div class="results" id="output">
+    <strong>Resultados:</strong> Complete los datos y presione calcular.
+  </div>
+</div>
+
+<script>
 /**
  * PESO Y BALANCE YV647T - MD-83
  * Actualizado con límites estructurales de MD-83 y tablas de índices Rev. 02
  */
-
 const YV647T_CONFIG = {
   registration: "YV647T",
   aircraftType: "MD-83",
-  
-  // Límites máximos estructurales (lbs)
   limits: {
-    maxTaxiWeight: 160500,     // Ramp Weight
-    maxTakeoffWeight: 160000,  // MTOW
-    maxLandingWeight: 139500,  // MLW
-    maxZeroFuelWeight: 122000, // MZFW
-    
-    // Capacidades máximas
-    cabins: {
-      A: 50, // Max Pax
-      B: 65, // Max Pax
-      C: 51  // Max Pax
-    },
-    compartments: {
-      comp1: 3585, // Max Lb
-      comp2: 2925, // Max Lb
-      comp3: 7520, // Max Lb
-      comp4: 6645  // Max Lb
-    }
+    maxTaxiWeight: 160500,
+    maxTakeoffWeight: 160000,
+    maxLandingWeight: 139500,
+    maxZeroFuelWeight: 122000,
+    cabins: { A: 50, B: 65, C: 51 },
+    compartments: { comp1: 3585, comp2: 2925, comp3: 7520, comp4: 6645 }
   },
-
-  // Tablas de Índices (U.I.) de la Hoja de Carga YV647T
   tables: {
-    cabinA: [
-      { min: 1, max: 4, index: -3.5 }, { min: 5, max: 8, index: -6.9 },
-      { min: 9, max: 12, index: -10.4 }, { min: 13, max: 16, index: -13.8 },
-      { min: 17, max: 20, index: -17.3 }, { min: 21, max: 24, index: -20.7 },
-      { min: 25, max: 28, index: -24.2 }, { min: 29, max: 32, index: -27.6 },
-      { min: 33, max: 36, index: -31.1 }, { min: 37, max: 40, index: -34.5 },
-      { min: 41, max: 44, index: -38.0 }, { min: 45, max: 48, index: -41.4 },
-      { min: 49, max: 50, index: -43.1 }
-    ],
-    cabinB: [
-      { min: 1, max: 4, index: -1.1 }, { min: 5, max: 8, index: -2.2 },
-      { min: 9, max: 12, index: -3.2 }, { min: 13, max: 16, index: -4.3 },
-      { min: 17, max: 20, index: -5.4 }, { min: 21, max: 24, index: -6.5 },
-      { min: 25, max: 28, index: -7.5 }, { min: 29, max: 32, index: -8.6 },
-      { min: 33, max: 36, index: -9.7 }, { min: 37, max: 40, index: -10.8 },
-      { min: 41, max: 44, index: -11.8 }, { min: 45, max: 48, index: -12.9 },
-      { min: 49, max: 52, index: -14.0 }, { min: 53, max: 56, index: -15.1 },
-      { min: 57, max: 65, index: -17.5 }
-    ],
-    cabinC: [
-      { min: 1, max: 3, index: 1.1 }, { min: 4, max: 6, index: 2.2 },
-      { min: 7, max: 9, index: 3.3 }, { min: 10, max: 12, index: 4.4 },
-      { min: 13, max: 15, index: 5.5 }, { min: 16, max: 18, index: 6.6 },
-      { min: 19, max: 21, index: 7.8 }, { min: 22, max: 24, index: 8.9 },
-      { min: 25, max: 27, index: 10.0 }, { min: 28, max: 30, index: 11.1 },
-      { min: 31, max: 33, index: 12.2 }, { min: 34, max: 35, index: 12.9 },
-      { min: 36, max: 51, index: 18.8 }
-    ],
-    comp1: [
-      { min: 1, max: 350, index: -2.2 }, { min: 351, max: 700, index: -4.4 },
-      { min: 701, max: 1050, index: -6.6 }, { min: 1051, max: 1400, index: -8.8 },
-      { min: 1401, max: 1750, index: -11.0 }, { min: 1751, max: 2100, index: -13.2 },
-      { min: 2101, max: 2450, index: -15.4 }, { min: 2451, max: 2800, index: -17.6 },
-      { min: 2801, max: 3150, index: -19.8 }, { min: 3151, max: 3585, index: -22.5 }
-    ],
-    comp2: [
-      { min: 1, max: 300, index: -1.4 }, { min: 301, max: 600, index: -2.8 },
-      { min: 601, max: 900, index: -4.2 }, { min: 901, max: 1200, index: -5.6 },
-      { min: 1201, max: 1500, index: -6.9 }, { min: 1501, max: 1800, index: -8.3 },
-      { min: 1801, max: 2100, index: -9.7 }, { min: 2101, max: 2400, index: -11.1 },
-      { min: 2401, max: 2700, index: -12.5 }, { min: 2701, max: 2925, index: -13.5 }
-    ],
-    comp3: [
-      { min: 1, max: 500, index: -1.3 }, { min: 501, max: 1000, index: -2.7 },
-      { min: 1001, max: 1500, index: -4.0 }, { min: 1501, max: 2000, index: -5.4 },
-      { min: 2001, max: 2500, index: -6.7 }, { min: 2501, max: 3000, index: -8.0 },
-      { min: 3001, max: 3500, index: -10.8 }, { min: 3501, max: 4000, index: -12.1 },
-      { min: 4001, max: 5500, index: -10.1 }, { min: 5501, max: 6500, index: -11.3 },
-      { min: 6501, max: 7520, index: -20.3 }
-    ],
-    comp4: [
-      { min: 1, max: 500, index: 1.3 }, { min: 501, max: 1000, index: 2.7 },
-      { min: 1001, max: 1500, index: 4.0 }, { min: 1501, max: 2000, index: 5.3 },
-      { min: 2001, max: 2500, index: 6.6 }, { min: 2501, max: 3000, index: 8.0 },
-      { min: 3001, max: 3500, index: 9.3 }, { min: 3501, max: 4000, index: 10.6 },
-      { min: 4001, max: 4500, index: 11.9 }, { min: 4501, max: 5000, index: 13.5 },
-      { min: 5001, max: 6645, index: 15.7 }
-    ]
+    cabinA: [{ min: 1, max: 4, index: -3.5 }, { min: 5, max: 8, index: -6.9 }, { min: 9, max: 12, index: -10.4 }, { min: 13, max: 16, index: -13.8 }, { min: 17, max: 20, index: -17.3 }, { min: 21, max: 24, index: -20.7 }, { min: 25, max: 28, index: -24.2 }, { min: 29, max: 32, index: -27.6 }, { min: 33, max: 36, index: -31.1 }, { min: 37, max: 40, index: -34.5 }, { min: 41, max: 44, index: -38.0 }, { min: 45, max: 48, index: -41.4 }, { min: 49, max: 50, index: -43.1 }],
+    cabinB: [{ min: 1, max: 4, index: -1.1 }, { min: 5, max: 8, index: -2.2 }, { min: 9, max: 12, index: -3.2 }, { min: 13, max: 16, index: -4.3 }, { min: 17, max: 20, index: -5.4 }, { min: 21, max: 24, index: -6.5 }, { min: 25, max: 28, index: -7.5 }, { min: 29, max: 32, index: -8.6 }, { min: 33, max: 36, index: -9.7 }, { min: 37, max: 40, index: -10.8 }, { min: 41, max: 44, index: -11.8 }, { min: 45, max: 48, index: -12.9 }, { min: 49, max: 52, index: -14.0 }, { min: 53, max: 56, index: -15.1 }, { min: 57, max: 65, index: -17.5 }],
+    cabinC: [{ min: 1, max: 3, index: 1.1 }, { min: 4, max: 6, index: 2.2 }, { min: 7, max: 9, index: 3.3 }, { min: 10, max: 12, index: 4.4 }, { min: 13, max: 15, index: 5.5 }, { min: 16, max: 18, index: 6.6 }, { min: 19, max: 21, index: 7.8 }, { min: 22, max: 24, index: 8.9 }, { min: 25, max: 27, index: 10.0 }, { min: 28, max: 30, index: 11.1 }, { min: 31, max: 33, index: 12.2 }, { min: 34, max: 35, index: 12.9 }, { min: 36, max: 51, index: 18.8 }],
+    comp1: [{ min: 1, max: 350, index: -2.2 }, { min: 351, max: 700, index: -4.4 }, { min: 701, max: 1050, index: -6.6 }, { min: 1051, max: 1400, index: -8.8 }, { min: 1401, max: 1750, index: -11.0 }, { min: 1751, max: 2100, index: -13.2 }, { min: 2101, max: 2450, index: -15.4 }, { min: 2451, max: 2800, index: -17.6 }, { min: 2801, max: 3150, index: -19.8 }, { min: 3151, max: 3585, index: -22.5 }],
+    comp2: [{ min: 1, max: 300, index: -1.4 }, { min: 301, max: 600, index: -2.8 }, { min: 601, max: 900, index: -4.2 }, { min: 901, max: 1200, index: -5.6 }, { min: 1201, max: 1500, index: -6.9 }, { min: 1501, max: 1800, index: -8.3 }, { min: 1801, max: 2100, index: -9.7 }, { min: 2101, max: 2400, index: -11.1 }, { min: 2401, max: 2700, index: -12.5 }, { min: 2701, max: 2925, index: -13.5 }],
+    comp3: [{ min: 1, max: 500, index: -1.3 }, { min: 501, max: 1000, index: -2.7 }, { min: 1001, max: 1500, index: -4.0 }, { min: 1501, max: 2000, index: -5.4 }, { min: 2001, max: 2500, index: -6.7 }, { min: 2501, max: 3000, index: -8.0 }, { min: 3001, max: 3500, index: -10.8 }, { min: 3501, max: 4000, index: -12.1 }, { min: 4001, max: 5500, index: -10.1 }, { min: 5501, max: 6500, index: -11.3 }, { min: 6501, max: 7520, index: -20.3 }],
+    comp4: [{ min: 1, max: 500, index: 1.3 }, { min: 501, max: 1000, index: 2.7 }, { min: 1001, max: 1500, index: 4.0 }, { min: 1501, max: 2000, index: 5.3 }, { min: 2001, max: 2500, index: 6.6 }, { min: 2501, max: 3000, index: 8.0 }, { min: 3001, max: 3500, index: 9.3 }, { min: 3501, max: 4000, index: 10.6 }, { min: 4001, max: 4500, index: 11.9 }, { min: 4501, max: 5000, index: 13.5 }, { min: 5001, max: 6645, index: 15.7 }]
   }
 };
 
@@ -112,21 +106,18 @@ function getIndexValue(val, table) {
   return match ? match.index : 0;
 }
 
-function calcularPesoBalanceYEmbolo(datos) {
-  const { dow, dowIndex, paxA, paxB, paxC, comp1, comp2, comp3, comp4, fuelRamp, taxiFuel, tripFuel, paxAvgWeight = 175 } = datos;
-
-  // 1. Pesos de Tráfico y Carga
+function calcularPesoBalance(datos) {
+  const { dow, dowIndex, paxA, paxB, paxC, comp1, comp2, comp3, comp4, fuelRamp, tripFuel, paxAvgWeight = 175 } = datos;
+  
   const pesoPax = (paxA + paxB + paxC) * paxAvgWeight;
   const pesoCarga = comp1 + comp2 + comp3 + comp4;
   const trafficLoad = pesoPax + pesoCarga;
-
-  // 2. Pesos Operacionales
+  
   const zfw = dow + trafficLoad;
   const rampWeight = zfw + fuelRamp;
-  const tow = rampWeight - taxiFuel;
+  const tow = rampWeight - 500; // Taxi fuel std
   const ldw = tow - tripFuel;
 
-  // 3. Cálculos de Índices
   const idxA = getIndexValue(paxA, YV647T_CONFIG.tables.cabinA);
   const idxB = getIndexValue(paxB, YV647T_CONFIG.tables.cabinB);
   const idxC = getIndexValue(paxC, YV647T_CONFIG.tables.cabinC);
@@ -136,14 +127,9 @@ function calcularPesoBalanceYEmbolo(datos) {
   const idx4 = getIndexValue(comp4, YV647T_CONFIG.tables.comp4);
 
   const zfwIndex = dowIndex + idxA + idxB + idxC + idx1 + idx2 + idx3 + idx4;
-  
-  // %MAC para MD-83
   const macPercent = Number((((zfwIndex * 100000) / zfw) + 21.5).toFixed(2));
+  const posicionEmbolo = Number(((26.0 - macPercent) / 1.8).toFixed(1));
 
-  // Posición del Émbolo (Unidades Trim)
-  const posicionEmbolo = Number(((26.0 - macPercent) / 1.8).toFixed(2));
-
-  // 4. Validaciones de Límites
   const lim = YV647T_CONFIG.limits;
   const validaciones = {
     paxA: paxA <= lim.cabins.A,
@@ -154,7 +140,7 @@ function calcularPesoBalanceYEmbolo(datos) {
     comp3: comp3 <= lim.compartments.comp3,
     comp4: comp4 <= lim.compartments.comp4,
     zfw: zfw <= lim.maxZeroFuelWeight,
-    ramp: rampWeight <= lim.maxTaxiWeight,
+    rampWeight: rampWeight <= lim.maxTaxiWeight,
     tow: tow <= lim.maxTakeoffWeight,
     ldw: ldw <= lim.maxLandingWeight
   };
@@ -169,3 +155,35 @@ function calcularPesoBalanceYEmbolo(datos) {
     detallesValidacion: validaciones
   };
 }
+
+function ejecutarCalculo() {
+  const datos = {
+    dow: Number(document.getElementById('dow').value),
+    dowIndex: Number(document.getElementById('dowIndex').value),
+    paxA: Number(document.getElementById('paxA').value),
+    paxB: Number(document.getElementById('paxB').value),
+    paxC: Number(document.getElementById('paxC').value),
+    comp1: Number(document.getElementById('comp1').value),
+    comp2: Number(document.getElementById('comp2').value),
+    comp3: Number(document.getElementById('comp3').value),
+    comp4: Number(document.getElementById('comp4').value),
+    fuelRamp: Number(document.getElementById('fuelRamp').value),
+    tripFuel: Number(document.getElementById('tripFuel').value)
+  };
+
+  const res = calcularPesoBalance(datos);
+
+  let html = `<p><strong>Aeronave:</strong> ${res.aeronave} (${res.tipo})</p>`;
+  html += `<p><strong>ZFW:</strong> ${res.pesos.zfw} lbs</p>`;
+  html += `<p><strong>TOW:</strong> ${res.pesos.tow} lbs (Max: 160000 lbs)</p>`;
+  html += `<p><strong>LDW:</strong> ${res.pesos.ldw} lbs</p>`;
+  html += `<p><strong>% MAC:</strong> ${res.balance.macPercent}%</p>`;
+  html += `<p><strong>Posición de Émbolo (Trim):</strong> ${res.balance.posicionEmbolo}</p>`;
+  html += `<p><strong>Estado de Límites:</strong> <span style="color:${res.dentroDeLimites ? 'green' : 'red'}; font-weight:bold;">${res.dentroDeLimites ? 'DENTRO DE LÍMITES' : 'EXCEDE LÍMITES'}</span></p>`;
+
+  document.getElementById('output').innerHTML = html;
+}
+</script>
+
+</body>
+</html>
